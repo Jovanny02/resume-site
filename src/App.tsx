@@ -1,20 +1,44 @@
-import { Button } from "@/components/ui/button"
+import { Outlet, Route, Routes } from "react-router"
+
+import { SiteHeader } from "@/components/site-header"
+import { AboutPage } from "@/pages/about-page"
+import { HomePage } from "@/pages/home-page"
+import { NotFoundPage } from "@/pages/not-found-page"
+import { ProjectsPage } from "@/pages/projects-page"
+import { ResumePage } from "@/pages/resume-page"
+
+function AppLayout() {
+  return (
+    <div className="min-h-svh">
+      <a
+        href="#main-content"
+        className="sr-only rounded-md bg-background p-3 focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50"
+      >
+        Skip to content
+      </a>
+      <SiteHeader />
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="mx-auto max-w-5xl px-4 py-12 outline-none sm:px-6 sm:py-20"
+      >
+        <Outlet />
+      </main>
+    </div>
+  )
+}
 
 export function App() {
   return (
-    <div className="flex min-h-svh p-6">
-      <div className="flex max-w-md min-w-0 flex-col gap-4 text-sm leading-loose">
-        <div>
-          <h1 className="font-medium">Project ready!</h1>
-          <p>You may now add components and start building.</p>
-          <p>We&apos;ve already added the button component for you.</p>
-          <Button className="mt-2">Button</Button>
-        </div>
-        <div className="font-mono text-xs text-muted-foreground">
-          (Press <kbd>d</kbd> to toggle dark mode)
-        </div>
-      </div>
-    </div>
+    <Routes>
+      <Route element={<AppLayout />}>
+        <Route index element={<HomePage />} />
+        <Route path="resume" element={<ResumePage />} />
+        <Route path="about" element={<AboutPage />} />
+        <Route path="projects" element={<ProjectsPage />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Route>
+    </Routes>
   )
 }
 

@@ -47,3 +47,27 @@ Client-side routes must support direct URL navigation.
 
 Record significant architectural decisions and their rationale
 here as the project evolves.
+
+### Initial client-side routing
+
+`src/main.tsx` supplies `BrowserRouter`. `src/App.tsx` declares the
+routes and a shared layout; its `Outlet` renders the matching page while
+keeping `SiteHeader` in place. Each page component lives in its own kebab-case file under
+`src/pages/`, such as `home-page.tsx` and `resume-page.tsx`. Navigation labels and destinations live in
+`src/data/navigation.ts`; add individual project links alongside their routes.
+Unknown URLs render a page-not-found view.
+
+For direct navigation and refreshes, configure the Nginx site location to
+serve existing assets first and fall back to the application entry point:
+
+```nginx
+location / {
+    try_files $uri $uri/ /index.html;
+}
+```
+
+This assumes deployment at the domain root. No server configuration is
+changed by this repository update.
+
+Run `npm test` for Vitest/React Testing Library checks of direct routes,
+active navigation, and keyboard access to the Projects dropdown.

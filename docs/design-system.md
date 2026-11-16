@@ -13,15 +13,81 @@
 
 Use semantic shadcn theme tokens rather than hardcoded colors.
 
-Primary tokens:
-- background / foreground
-- primary / primary-foreground
-- secondary / secondary-foreground
-- muted / muted-foreground
-- accent / accent-foreground
-- border / ring
+### How the theme reaches a component
 
-Final light/dark palettes: TBD.
+Following [shadcn's theming convention](https://ui.shadcn.com/docs/theming),
+`src/index.css` defines light values in `:root` and dark overrides in `.dark`.
+The existing `ThemeProvider` toggles `.dark` on `<html>`; React components
+keep the same classes in both modes.
+
+`@theme inline` connects a CSS variable to Tailwind. For example:
+
+```css
+/* Palette value → Tailwind mapping → component utility */
+--primary: #b45335;
+--color-primary: var(--primary); /* inside @theme inline */
+```
+
+```tsx
+<Button>Primary action</Button>
+// The default variant uses bg-primary and text-primary-foreground.
+```
+
+`foreground` is the supplied palette's `text` color. A token such as
+`primary` is a surface; `primary-foreground` is text/icons **on that surface**,
+not another shade of primary. Hex colors work directly with this setup;
+converting them to OKLCH is unnecessary.
+
+### Portfolio palette
+
+| Role / CSS token | Light | Dark |
+| --- | --- | --- |
+| Page text / `foreground` | `#242424` | `#dbdbdb` |
+| Page fill / `background` | `#f8f4e3` | `#1d1907` |
+| Brand fill / `primary` | `#b45335` | `#ca6749` |
+| Supporting fill / `secondary` | `#8491a3` | `#5c697a` |
+| Interactive fill / `accent` | `#655efc` | `#0b03a0` |
+| Text on primary | `#ffffff` | `#1d1907` |
+| Text on secondary | `#242424` | `#ffffff` |
+| Text on accent | `#ffffff` | `#dbdbdb` |
+
+The five supplied colors in each mode are preserved exactly. Foregrounds
+are chosen per surface rather than reusing the page text everywhere.
+
+### Supporting tokens
+
+`color-mix(in srgb, A 14%, B)` combines 14% of A with 86% of B.
+These are design choices derived from the palette, not shadcn requirements.
+
+| Tokens | Mapping and purpose |
+| --- | --- |
+| `card`, `popover` | Light: background mixed with 50% white. Dark: 12% secondary over background. Raised panels and dropdown surfaces. |
+| `card-foreground`, `popover-foreground` | Use page `foreground`. |
+| `muted` | Secondary mixed into background: 14% light, 20% dark. Subtle hover and supporting surfaces. |
+| `muted-foreground` | 75% foreground mixed with background. Descriptions and helper text. |
+| `border` | Secondary mixed into background: 55% light, 70% dark. Separators and surface edges. |
+| `input` | 80% secondary over background in light mode; secondary in dark mode. Form borders. |
+| `ring` | Primary. Keyboard focus indicator color; components may apply opacity. |
+| `destructive` | Retains shadcn's red error colors; errors should remain distinct from brand actions. |
+| `chart-1`–`chart-5` | Primary, secondary, accent, then two blends. Reserved palette; validate series distinction when adding charts. |
+| `sidebar*` | Reuses muted, foreground, primary, accent, border, and ring with their matching foregrounds. |
+| `radius` | Unchanged `0.625rem` base corner radius; not a color. |
+
+### Usage and verification
+
+Use semantic pairs, for example `bg-accent text-accent-foreground`.
+`text-accent` alone puts the accent color on the current surface; the deep
+dark accent is unsuitable as text on the dark page background.
+
+The current navigation primitive uses `muted` for hover/active fills, so
+changing `accent` does not automatically recolor those interactions. Tokens
+only affect components that reference them. No charts or sidebar are
+currently rendered.
+
+Check both themes using the existing **D** keyboard shortcut outside inputs.
+Review page text, descriptions, header highlights, the Projects dropdown,
+and keyboard focus. Solid text/surface pairs were checked numerically;
+opacity-based hover and focus treatments still need browser review.
 
 ## Typography
 
