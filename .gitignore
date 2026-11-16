@@ -37,4 +37,6 @@ resume-site.code-workspace
 # environment file
 .env*
 
+# Ai agent specific 
+AGENTS.md
 
