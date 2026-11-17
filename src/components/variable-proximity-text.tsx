@@ -1,5 +1,4 @@
 import { useLayoutEffect, useRef, useSyncExternalStore } from "react"
-import type { PointerEvent } from "react"
 import {
   motion,
   useMotionTemplate,
@@ -20,7 +19,7 @@ type VariableProximityTextProps = {
   /** Roboto Flex grade values range from -200 (thin) to 150 (thick). */
   baseGrade?: number
   peakGrade?: number
-  /** 0–1: strength of the configured grade and color effects. */
+  /** 0–1: strength of the configured thickness and color effects. */
   intensity?: number
   className?: string
 }
@@ -78,7 +77,7 @@ function ProximityLetter({
   // Smooth once so thickness and color always follow the same influence.
   const influence = useSpring(targetInfluence, {
     stiffness: 180,
-    damping: 28,
+    damping: 40,
     mass: 0.6,
     restDelta: 0.001,
     restSpeed: 0.01,
@@ -87,7 +86,13 @@ function ProximityLetter({
     influence,
     (value) => baseGrade + (peakGrade - baseGrade) * value
   )
-  const fontVariationSettings = useMotionTemplate`"GRAD" ${grade}`
+  // Start with the thinner endpoint so stroke widths never need to be negative.
+  const fixedGrade = Math.min(baseGrade, peakGrade)
+  const strokeWidth = useTransform(
+    grade,
+    (value) => (value - fixedGrade) * 0.00012
+  )
+  const textStrokeWidth = useMotionTemplate`${strokeWidth}em`
   const primaryPercentage = useTransform(influence, (value) => value * 100)
   // Resolve theme tokens in CSS, including when the theme changes in place.
   const color = useMotionTemplate`color-mix(in oklab, var(--foreground), var(--primary) ${primaryPercentage}%)`
@@ -96,7 +101,12 @@ function ProximityLetter({
     <motion.span
       data-proximity-letter=""
       className="inline-block"
-      style={{ fontVariationSettings, color }}
+      style={{
+        fontVariationSettings: `"GRAD" ${fixedGrade}`,
+        WebkitTextStrokeWidth: textStrokeWidth,
+        WebkitTextStrokeColor: "currentColor",
+        color,
+      }}
     >
       {character}
     </motion.span>
@@ -109,10 +119,11 @@ export function VariableProximityText({
   radius = 180,
   intensity = 1,
   baseGrade = 0,
-  peakGrade = 150,
+  peakGrade = 25,
   className,
 }: VariableProximityTextProps) {
   const containerRef = useRef<HTMLSpanElement>(null)
+  const pointerViewport = useRef<Point | null>(null)
   const pointer = useMotionValue<Point | null>(null)
   const centers = useMotionValue<Point[]>([])
   const restingGrade = Math.min(150, Math.max(-200, baseGrade))
@@ -130,10 +141,12 @@ export function VariableProximityText({
     if (!container || !interactive) return
 
     let disposed = false
-    const resetPointer = () => pointer.set(null)
+    const resetPointer = () => {
+      pointerViewport.current = null
+      pointer.set(null)
+    }
     const measure = () => {
       if (disposed) return
-      resetPointer()
       const bounds = container.getBoundingClientRect()
       const letters = container.querySelectorAll("[data-proximity-letter]")
       centers.set(
@@ -145,6 +158,25 @@ export function VariableProximityText({
           }
         })
       )
+      if (pointerViewport.current) {
+        pointer.set({
+          x: pointerViewport.current.x - bounds.left,
+          y: pointerViewport.current.y - bounds.top,
+        })
+      }
+    }
+
+    const handlePointerMove = (event: PointerEvent) => {
+      if (event.pointerType === "touch") return
+      const bounds = container.getBoundingClientRect()
+      pointerViewport.current = { x: event.clientX, y: event.clientY }
+      pointer.set({
+        x: event.clientX - bounds.left,
+        y: event.clientY - bounds.top,
+      })
+    }
+    const handlePointerOut = (event: PointerEvent) => {
+      if (!event.relatedTarget) resetPointer()
     }
 
     measure()
@@ -153,40 +185,36 @@ export function VariableProximityText({
     // Font swaps can alter letter positions without changing container size.
     void document.fonts?.ready.then(measure)
     document.fonts?.addEventListener("loadingdone", measure)
-    // Scroll changes viewport coordinates; clear any stale pointer position.
-    window.addEventListener("scroll", resetPointer, true)
+    window.addEventListener("pointermove", handlePointerMove)
+    window.addEventListener("pointerout", handlePointerOut)
+    window.addEventListener("pointercancel", resetPointer)
+    // Scroll can move the heading while the pointer remains stationary.
+    window.addEventListener("scroll", measure, true)
     window.addEventListener("blur", resetPointer)
 
     return () => {
       disposed = true
       observer.disconnect()
       document.fonts?.removeEventListener("loadingdone", measure)
-      window.removeEventListener("scroll", resetPointer, true)
+      window.removeEventListener("pointermove", handlePointerMove)
+      window.removeEventListener("pointerout", handlePointerOut)
+      window.removeEventListener("pointercancel", resetPointer)
+      window.removeEventListener("scroll", measure, true)
       window.removeEventListener("blur", resetPointer)
       resetPointer()
     }
   }, [text, interactive, centers, pointer])
-
-  function handlePointerMove(event: PointerEvent<HTMLSpanElement>) {
-    if (!interactive || event.pointerType === "touch") return
-    // One container read per event; letter measurements stay cached.
-    const bounds = event.currentTarget.getBoundingClientRect()
-    pointer.set({
-      x: event.clientX - bounds.left,
-      y: event.clientY - bounds.top,
-    })
-  }
 
   let letterIndex = 0
 
   return (
     <span
       ref={containerRef}
-      className={cn("variable-proximity-text block", className)}
+      className={cn(
+        "variable-proximity-text block whitespace-pre-line",
+        className
+      )}
       style={{ fontVariationSettings: `"GRAD" ${restingGrade}` }}
-      onPointerMove={handlePointerMove}
-      onPointerLeave={() => pointer.set(null)}
-      onPointerCancel={() => pointer.set(null)}
     >
       {interactive ? (
         <>

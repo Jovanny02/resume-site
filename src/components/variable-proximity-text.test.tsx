@@ -56,12 +56,17 @@ function renderSample() {
   const result = render(
     <StrictMode>
       <h2>
-        <VariableProximityText text="A B" radius={120} />
+        <VariableProximityText text="A B" radius={120} peakGrade={150} />
       </h2>
+      <p>Below the heading</p>
     </StrictMode>
   )
   const heading = screen.getByRole("heading", { name: "A B" })
   return { ...result, heading }
+}
+
+function strokeOf(letter: HTMLElement) {
+  return parseFloat(letter.style.webkitTextStrokeWidth) || 0
 }
 
 function gradeOf(letter: HTMLElement) {
@@ -113,6 +118,24 @@ afterEach(() => {
 })
 
 describe("variable proximity text", () => {
+  it.each([false, true])(
+    "preserves explicit line breaks with reduced motion %s",
+    (reduced) => {
+      reducedMotion = reduced
+      render(
+        <h2>
+          <VariableProximityText text={"First.\nSecond."} />
+        </h2>
+      )
+      const heading = screen.getByRole("heading", {
+        name: /First\.\s+Second\./,
+      })
+      const container = heading.firstElementChild
+      expect(container).toHaveClass("whitespace-pre-line")
+      expect(container?.textContent).toContain("First.\nSecond.")
+    }
+  )
+
   it("exposes the complete heading once and adds no keyboard stops", () => {
     const { heading } = renderSample()
     expect(heading).toHaveAccessibleName("A B")
@@ -124,28 +147,54 @@ describe("variable proximity text", () => {
     expect(within(heading).getByText("A")).not.toHaveAttribute("tabindex")
   })
 
-  it("thickens nearby letters, follows distance, and returns after pointer exit", async () => {
+  it("thickens nearby letters, follows distance, and returns after leaving the window", async () => {
     const { heading } = renderSample()
     const a = within(heading).getByText("A")
     const b = within(heading).getByText("B")
 
     // Outside A's bounds, but inside its influence radius.
     fireEvent.pointerMove(a, { clientX: 70, clientY: 50, pointerType: "mouse" })
-    await waitFor(() => expect(gradeOf(a)).toBeGreaterThan(90))
-    expect(gradeOf(b)).toBe(0)
+    await waitFor(() => expect(strokeOf(a)).toBeGreaterThan(0.01))
+    expect(strokeOf(b)).toBe(0)
 
     fireEvent.pointerMove(b, {
       clientX: 300,
       clientY: 50,
       pointerType: "mouse",
     })
-    await waitFor(() => {
-      expect(gradeOf(b)).toBeGreaterThan(130)
-      expect(gradeOf(a)).toBeLessThan(1)
-    })
+    await waitFor(
+      () => {
+        expect(strokeOf(b)).toBeGreaterThan(0.015)
+        expect(strokeOf(a)).toBeLessThan(0.0002)
+      },
+      { timeout: 3000 }
+    )
 
-    fireEvent.pointerLeave(b)
-    await waitFor(() => expect(gradeOf(b)).toBeLessThan(1))
+    fireEvent.pointerOut(b, { relatedTarget: null, pointerType: "mouse" })
+    await waitFor(() => expect(strokeOf(b)).toBeLessThan(0.0002), {
+      timeout: 3000,
+    })
+  })
+
+  it("responds to a pointer outside the heading and returns to rest beyond the radius", async () => {
+    const { heading } = renderSample()
+    const a = within(heading).getByText("A")
+    const paragraph = screen.getByText("Below the heading")
+    fireEvent.pointerOut(a, { relatedTarget: paragraph, pointerType: "mouse" })
+    fireEvent.pointerMove(paragraph, {
+      clientX: 40,
+      clientY: 110,
+      pointerType: "mouse",
+    })
+    await waitFor(() => expect(strokeOf(a)).toBeGreaterThan(0.008))
+    fireEvent.pointerMove(paragraph, {
+      clientX: 40,
+      clientY: 300,
+      pointerType: "mouse",
+    })
+    await waitFor(() => expect(strokeOf(a)).toBeLessThan(0.0002), {
+      timeout: 3000,
+    })
   })
 
   it("remeasures letters when the text container resizes", async () => {
@@ -154,7 +203,49 @@ describe("variable proximity text", () => {
     secondLetterX = 60
     act(() => observers.at(-1)?.resize())
     fireEvent.pointerMove(b, { clientX: 70, clientY: 50, pointerType: "mouse" })
-    await waitFor(() => expect(gradeOf(b)).toBeGreaterThan(130))
+    await waitFor(() => expect(strokeOf(b)).toBeGreaterThan(0.015))
+  })
+
+  it("animates stroke width while keeping the glyph grade fixed", async () => {
+    render(
+      <h2>
+        <VariableProximityText
+          text="A"
+          radius={120}
+          baseGrade={-200}
+          peakGrade={150}
+        />
+      </h2>
+    )
+    const letter = within(screen.getByRole("heading", { name: "A" })).getByText(
+      "A",
+      { selector: "[data-proximity-letter]" }
+    )
+    expect(gradeOf(letter)).toBe(-200)
+    fireEvent.pointerMove(letter, {
+      clientX: 40,
+      clientY: 50,
+      pointerType: "mouse",
+    })
+    await waitFor(() =>
+      expect(parseFloat(letter.style.webkitTextStrokeWidth)).toBeGreaterThan(
+        0.03
+      )
+    )
+    expect(gradeOf(letter)).toBe(-200)
+  })
+
+  it("keeps tracking a stationary pointer when letters are remeasured", async () => {
+    const { heading } = renderSample()
+    const a = within(heading).getByText("A")
+    const b = within(heading).getByText("B")
+    fireEvent.pointerMove(a, { clientX: 70, clientY: 50, pointerType: "mouse" })
+    await waitFor(() => expect(strokeOf(a)).toBeGreaterThan(0.01))
+
+    secondLetterX = 60
+    act(() => observers.at(-1)?.resize())
+    await waitFor(() => expect(strokeOf(b)).toBeGreaterThan(0.015))
+    expect(strokeOf(a)).toBeGreaterThan(0.01)
   })
 
   it("applies edited thickness and radius settings without another pointer move", async () => {
@@ -175,18 +266,20 @@ describe("variable proximity text", () => {
 
     expect(gradeOf(a)).toBe(-200)
     fireEvent.pointerMove(a, { clientX: 70, clientY: 50, pointerType: "mouse" })
-    await waitFor(() => expect(gradeOf(a)).toBeGreaterThan(80))
-    expect(gradeOf(b)).toBe(-200)
+    await waitFor(() => expect(strokeOf(a)).toBeGreaterThan(0.03))
+    expect(strokeOf(b)).toBe(0)
 
     rerender(sample(-100, 50, 120))
     await waitFor(() => {
-      expect(gradeOf(a)).toBeGreaterThan(10)
-      expect(gradeOf(a)).toBeLessThan(40)
-      expect(gradeOf(b)).toBeCloseTo(-100, 0)
+      expect(strokeOf(a)).toBeGreaterThan(0.013)
+      expect(strokeOf(a)).toBeLessThan(0.017)
+      expect(strokeOf(b)).toBeCloseTo(0, 3)
     })
 
     rerender(sample(-100, 50, 20))
-    await waitFor(() => expect(gradeOf(a)).toBeCloseTo(-100, 0))
+    await waitFor(() => expect(strokeOf(a)).toBeCloseTo(0, 3), {
+      timeout: 3000,
+    })
   })
 
   it("ignores touch input even on a device with an attached mouse", async () => {
@@ -195,7 +288,7 @@ describe("variable proximity text", () => {
     fireEvent.pointerMove(a, { clientX: 40, clientY: 50, pointerType: "touch" })
     // Allow a frame to pass so this also catches incorrectly scheduled motion.
     await act(() => new Promise((resolve) => setTimeout(resolve, 80)))
-    expect(gradeOf(a)).toBe(0)
+    expect(strokeOf(a)).toBe(0)
   })
 
   it.each(["reduced motion", "touch-only input"])(
@@ -216,7 +309,7 @@ describe("variable proximity text", () => {
     const { heading } = renderSample()
     const a = within(heading).getByText("A")
     fireEvent.pointerMove(a, { clientX: 40, clientY: 50, pointerType: "mouse" })
-    await waitFor(() => expect(gradeOf(a)).toBeGreaterThan(100))
+    await waitFor(() => expect(strokeOf(a)).toBeGreaterThan(0.015))
 
     act(() => {
       reducedMotion = true

@@ -1,10 +1,25 @@
 import { render, screen } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { MemoryRouter } from "react-router"
-import { describe, expect, it } from "vitest"
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import App from "@/App"
 import { ThemeProvider } from "@/components/theme-provider"
+
+const title = /Hi, I'm Jovanny!\s+Software Engineer\.\s+Tech Nerd\./
+
+beforeEach(() => {
+  vi.stubGlobal("matchMedia", (query: string) => ({
+    media: query,
+    matches: false,
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    addListener: () => {},
+    removeListener: () => {},
+  }))
+})
+
+afterEach(() => vi.unstubAllGlobals())
 
 function renderApp(path = "/") {
   return render(
@@ -35,7 +50,7 @@ describe("portfolio navigation", () => {
   })
 
   it.each([
-    ["/", "Backend experience. New perspectives."],
+    ["/", title],
     ["/resume", "Resume"],
     ["/about", "About"],
     ["/projects", "Projects"],
@@ -62,7 +77,7 @@ describe("portfolio navigation", () => {
     await user.click(screen.getByRole("link", { name: "Home" }))
     expect(
       screen.getByRole("heading", {
-        name: "Backend experience. New perspectives.",
+        name: title,
       })
     ).toBeInTheDocument()
   })
