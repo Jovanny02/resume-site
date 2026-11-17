@@ -55,11 +55,11 @@
 :root {
   color-scheme: light;
   /* Your palette: "text" maps to shadcn's "foreground". */
-  --background: oklch(86.61% 0.029 266.34);
-  --foreground: oklch(14.18% 0.012 244.94);
-  --primary: oklch(14.18% 0.012 244.94);
-  --secondary: oklch(60.83% 0.038 256.39);
-  --accent: oklch(60.6% 0.13 236.49);
+  --foreground: oklch(16.17% 0.010 158.69);
+  --background: oklch(96.90% 0.030 94.34);
+  --primary: oklch(47.14% 0.117 142.14);
+  --secondary: oklch(90.26% 0.063 101.62);
+  --accent: oklch(38.96% 0.121 142.95);
 
   /* Text on filled controls needs contrast with its specific surface. */
   --primary-foreground: var(--background);
@@ -82,7 +82,7 @@
   --border: color-mix(in srgb, var(--secondary) 55%, var(--background));
   --input: color-mix(in srgb, var(--secondary) 80%, var(--background));
   --ring: var(--primary);
-  --destructive: oklch(0.577 0.245 27.325);
+  --destructive: oklch(54.72% 0.182 16.88);
 
   /* Reserved for future charts and sidebar components. */
   --chart-1: var(--primary);
@@ -106,11 +106,11 @@
 .dark {
   color-scheme: dark;
   /* Your exact dark palette. */
-  --background: oklch(24.96% 0.04 265.12);
-  --foreground: oklch(96.83% 0.007 247.9);
-  --primary: oklch(96.83% 0.007 247.9);
-  --secondary: oklch(55.74% 0.039 256.4);
-  --accent: oklch(75.85% 0.137 231.62);
+  --foreground: oklch(96.55% 0.007 160.08);
+  --background: oklch(21.91% 0.038 94.64);
+  --primary: oklch(81.78% 0.110 142.68);
+  --secondary: oklch(39.69% 0.067 102.19);
+  --accent: oklch(89.66% 0.118 144.84);
 
   --primary-foreground: var(--background);
   --secondary-foreground: #ffffff;
@@ -131,7 +131,7 @@
   --border: color-mix(in srgb, var(--secondary) 70%, var(--background));
   --input: var(--secondary);
   --ring: var(--primary);
-  --destructive: oklch(0.704 0.191 22.216);
+  --destructive: oklch(57.58% 0.183 15.51);
 
   /* Repeat aliases so they resolve against this mode's palette. */
   --chart-1: var(--primary);
