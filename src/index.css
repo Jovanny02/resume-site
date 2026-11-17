@@ -48,23 +48,25 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-/* Light is the default. ThemeProvider adds .dark to <html> to override it.
+/* :root holds the light palette; .dark overrides it.
+   ThemeProvider starts in dark mode unless a saved preference exists.
    Surface tokens set fills; their -foreground partners set text/icon colors.
    @theme inline above exposes these values as Tailwind utilities. */
 :root {
+  color-scheme: light;
   /* Your palette: "text" maps to shadcn's "foreground". */
-  --background: #f8f4e3;
-  --foreground: #242424;
-  --primary: #b45335;
-  --secondary: #8491a3;
-  --accent: #655efc;
+  --background: oklch(86.61% 0.029 266.34);
+  --foreground: oklch(14.18% 0.012 244.94);
+  --primary: oklch(14.18% 0.012 244.94);
+  --secondary: oklch(60.83% 0.038 256.39);
+  --accent: oklch(60.6% 0.13 236.49);
 
   /* Text on filled controls needs contrast with its specific surface. */
-  --primary-foreground: #ffffff;
-  --secondary-foreground: #242424;
-  --accent-foreground: #ffffff;
+  --primary-foreground: var(--background);
+  --secondary-foreground: var(--foreground);
+  --accent-foreground: var(--foreground);
 
-  /* Derived surfaces keep the warm background and cool supporting palette. */
+  /* Derived surfaces carry the cool blue-gray palette throughout the UI. */
   --card: color-mix(in srgb, var(--background) 50%, white);
   --card-foreground: var(--foreground);
   --popover: var(--card);
@@ -102,16 +104,17 @@
 }
 
 .dark {
+  color-scheme: dark;
   /* Your exact dark palette. */
-  --background: #1d1907;
-  --foreground: #dbdbdb;
-  --primary: #ca6749;
-  --secondary: #5c697a;
-  --accent: #0b03a0;
+  --background: oklch(24.96% 0.04 265.12);
+  --foreground: oklch(96.83% 0.007 247.9);
+  --primary: oklch(96.83% 0.007 247.9);
+  --secondary: oklch(55.74% 0.039 256.4);
+  --accent: oklch(75.85% 0.137 231.62);
 
-  --primary-foreground: #1d1907;
+  --primary-foreground: var(--background);
   --secondary-foreground: #ffffff;
-  --accent-foreground: #dbdbdb;
+  --accent-foreground: var(--background);
 
   /* Raise surfaces slightly above the dark background. */
   --card: color-mix(in srgb, var(--secondary) 12%, var(--background));

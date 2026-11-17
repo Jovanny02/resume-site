@@ -4,16 +4,36 @@ import { MemoryRouter } from "react-router"
 import { describe, expect, it } from "vitest"
 
 import App from "@/App"
+import { ThemeProvider } from "@/components/theme-provider"
 
 function renderApp(path = "/") {
   return render(
     <MemoryRouter initialEntries={[path]}>
-      <App />
+      <ThemeProvider>
+        <App />
+      </ThemeProvider>
     </MemoryRouter>
   )
 }
 
 describe("portfolio navigation", () => {
+  it("toggles between light and dark themes", async () => {
+    localStorage.setItem("theme", "dark")
+    const user = userEvent.setup()
+    renderApp()
+    const button = screen.getByRole("button", { name: "Switch to light theme" })
+
+    await user.click(button)
+    expect(document.documentElement).toHaveClass("light")
+    expect(localStorage.getItem("theme")).toBe("light")
+    expect(button).toHaveAccessibleName("Switch to dark theme")
+
+    await user.click(button)
+    expect(document.documentElement).toHaveClass("dark")
+    expect(localStorage.getItem("theme")).toBe("dark")
+    expect(button).toHaveAccessibleName("Switch to light theme")
+  })
+
   it.each([
     ["/", "Backend experience. New perspectives."],
     ["/resume", "Resume"],

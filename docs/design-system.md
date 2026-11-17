@@ -18,13 +18,16 @@ Use semantic shadcn theme tokens rather than hardcoded colors.
 Following [shadcn's theming convention](https://ui.shadcn.com/docs/theming),
 `src/index.css` defines light values in `:root` and dark overrides in `.dark`.
 The existing `ThemeProvider` toggles `.dark` on `<html>`; React components
-keep the same classes in both modes.
+keep the same classes in both modes. Dark mode is the default for new visits;
+a saved light, dark, or system preference takes precedence. The initial HTML
+also starts with `.dark` so the page uses the dark palette before React mounts.
+`color-scheme` matches native browser controls to the active mode.
 
 `@theme inline` connects a CSS variable to Tailwind. For example:
 
 ```css
 /* Palette value → Tailwind mapping → component utility */
---primary: #b45335;
+--primary: oklch(14.18% 0.012 244.94);
 --color-primary: var(--primary); /* inside @theme inline */
 ```
 
@@ -35,24 +38,26 @@ keep the same classes in both modes.
 
 `foreground` is the supplied palette's `text` color. A token such as
 `primary` is a surface; `primary-foreground` is text/icons **on that surface**,
-not another shade of primary. Hex colors work directly with this setup;
-converting them to OKLCH is unnecessary.
+not another shade of primary. This palette uses OKLCH directly: lightness,
+chroma (color intensity), and hue angle.
 
 ### Portfolio palette
 
 | Role / CSS token | Light | Dark |
 | --- | --- | --- |
-| Page text / `foreground` | `#242424` | `#dbdbdb` |
-| Page fill / `background` | `#f8f4e3` | `#1d1907` |
-| Brand fill / `primary` | `#b45335` | `#ca6749` |
-| Supporting fill / `secondary` | `#8491a3` | `#5c697a` |
-| Interactive fill / `accent` | `#655efc` | `#0b03a0` |
-| Text on primary | `#ffffff` | `#1d1907` |
-| Text on secondary | `#242424` | `#ffffff` |
-| Text on accent | `#ffffff` | `#dbdbdb` |
+| Page text / `foreground` | `oklch(14.18% 0.012 244.94)` | `oklch(96.83% 0.007 247.90)` |
+| Page fill / `background` | `oklch(86.61% 0.029 266.34)` | `oklch(24.96% 0.040 265.12)` |
+| Brand fill / `primary` | `oklch(14.18% 0.012 244.94)` | `oklch(96.83% 0.007 247.90)` |
+| Supporting fill / `secondary` | `oklch(60.83% 0.038 256.39)` | `oklch(55.74% 0.039 256.40)` |
+| Interactive fill / `accent` | `oklch(60.60% 0.130 236.49)` | `oklch(75.85% 0.137 231.62)` |
+| Text on primary | Background | Background |
+| Text on secondary | Foreground | `#ffffff` |
+| Text on accent | Foreground | Background |
 
 The five supplied colors in each mode are preserved exactly. Foregrounds
-are chosen per surface rather than reusing the page text everywhere.
+are chosen per surface rather than reusing the page text everywhere. Dark
+secondary uses white because the supplied off-white text is below 4.5:1
+contrast on that fill.
 
 ### Supporting tokens
 
@@ -76,8 +81,9 @@ These are design choices derived from the palette, not shadcn requirements.
 ### Usage and verification
 
 Use semantic pairs, for example `bg-accent text-accent-foreground`.
-`text-accent` alone puts the accent color on the current surface; the deep
-dark accent is unsuitable as text on the dark page background.
+`text-accent` alone puts the accent color on the current surface. In light
+mode, the accent is suitable as a fill with dark text, but does not have
+enough contrast for small text on the page background.
 
 The current navigation primitive uses `muted` for hover/active fills, so
 changing `accent` does not automatically recolor those interactions. Tokens

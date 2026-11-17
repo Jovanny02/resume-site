@@ -5,6 +5,7 @@ import { AboutPage } from "@/pages/about-page"
 import { HomePage } from "@/pages/home-page"
 import { NotFoundPage } from "@/pages/not-found-page"
 import { ProjectsPage } from "@/pages/projects-page"
+import { UIPlayGroundPage } from "@/pages/ui-playground-page"
 import { ResumePage } from "@/pages/resume-page"
 
 function AppLayout() {
@@ -36,6 +37,7 @@ export function App() {
         <Route path="resume" element={<ResumePage />} />
         <Route path="about" element={<AboutPage />} />
         <Route path="projects" element={<ProjectsPage />} />
+        <Route path="ui-playground" element={<UIPlayGroundPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

@@ -1,5 +1,6 @@
+import { useTheme } from "@/components/theme-provider"
 import { useState } from "react"
-import { FolderOpen } from "lucide-react"
+import { FolderOpen, Moon, Sun } from "lucide-react"
 import { NavLink, useLocation } from "react-router"
 
 import { navigationItems, projectLinks } from "@/data/navigation"
@@ -11,8 +12,10 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu"
+import { Button } from "@/components/ui/button"
 
 export function SiteHeader() {
+  const { resolvedTheme, setTheme } = useTheme()
   const [openMenu, setOpenMenu] = useState<string | null>(null)
   const { pathname } = useLocation()
   const isProjectsPage =
@@ -21,7 +24,6 @@ export function SiteHeader() {
   return (
     <header className="border-b bg-background">
       <div className="mx-auto flex max-w-5xl flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-
         <NavigationMenu
           value={openMenu}
           onValueChange={setOpenMenu}
@@ -51,14 +53,14 @@ export function SiteHeader() {
                 Projects
               </NavigationMenuTrigger>
               <NavigationMenuContent className="w-60">
-                {projectLinks.map(({ label, to }) => (
+                {projectLinks.map(({ label, to, icon: Icon }) => (
                   <NavigationMenuLink
                     key={to}
                     onClick={() => setOpenMenu(null)}
                     render={<NavLink to={to} end />}
                     active={pathname === to}
                   >
-                    <FolderOpen className="size-4" aria-hidden="true" />
+                    <Icon className="size-4" aria-hidden="true" />
                     {label}
                   </NavigationMenuLink>
                 ))}
@@ -69,6 +71,22 @@ export function SiteHeader() {
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
+        <Button
+          variant="outline"
+          size="icon"
+          aria-label={
+            resolvedTheme === "dark"
+              ? "Switch to light theme"
+              : "Switch to dark theme"
+          }
+          onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+        >
+          {resolvedTheme === "dark" ? (
+            <Sun aria-hidden="true" />
+          ) : (
+            <Moon aria-hidden="true" />
+          )}
+        </Button>
       </div>
     </header>
   )

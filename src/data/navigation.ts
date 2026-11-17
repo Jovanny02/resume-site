@@ -1,4 +1,4 @@
-import { FileText, House, UserRound } from "lucide-react"
+import { FileText, House, UserRound, FolderOpen, Brush } from "lucide-react"
 
 export const navigationItems = [
   { label: "Home", to: "/", icon: House },
@@ -7,4 +7,7 @@ export const navigationItems = [
 ] as const
 
 // Add links here when individual project pages are introduced.
-export const projectLinks = [{ label: "All projects", to: "/projects" }]
+export const projectLinks = [
+  { label: "All projects", to: "/projects", icon: FolderOpen },
+  { label: "UI Playground", to: "/ui-playground", icon: Brush  }
+]
