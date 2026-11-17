@@ -104,6 +104,44 @@ Monospace/accent font: TBD. -->
 
 Prefer readable text over decorative typography.
 
+The homepage introduction uses the selected left-aligned editorial direction,
+with the same text and initial settings available in the UI playground.
+Responsive display type uses `clamp(2.25rem, 6.5vw, 6rem)`.
+`VariableProximityText` uses a self-hosted Fontsource Roboto Flex Latin font
+with the grade axis, scoped to the component; Inter remains the site font.
+Its license ships in `public/fonts/roboto-flex-LICENSE.txt`.
+Grade defaults to moving from `0` toward `150` near the pointer, scaled by
+`intensity` from `0` to `1`. Playground sliders adjust resting thickness
+(`baseGrade`) and near-cursor thickness (`peakGrade`) across the font's
+`-200` to `150` range, plus influence radius from `60` to `400` pixels.
+Lowering the resting grade provides stronger contrast; `150` is already the
+font's maximum grade. The selected configuration is resting `-160`, near-cursor
+`200`, and radius `180px`; the component clamps `200` to the font's supported
+maximum of `150`. The playground retains the wider experimental near-cursor
+slider range and explains this limit. Slider edits are temporary and reset on
+leaving the page; they do not change the homepage configuration.
+Weight stays at `400`; width is not animated. Grade changes
+stroke thickness without changing advance widths, avoiding interaction-driven
+reflow. Initial font loading can still change text metrics; positions are
+remeasured when fonts finish loading.
+
+Words wrap as units; individual graphemes animate in separate inline boxes
+within each word. This prevents cross-letter kerning from shifting positions
+as grade changes. It trades natural kerning/shaping for layout stability, so
+this component is intended for short display text, not body paragraphs.
+The animated visual copy is hidden
+from assistive technology and paired with one uninterrupted accessible copy.
+Reduced-motion and touch-only settings render plain text without animation
+or additional tab stops. The prototype uses the existing theme tokens.
+
+Each letter's spring-smoothed proximity value also blends its color from
+`foreground` toward `primary`, using CSS `color-mix(in oklab, ...)`. Both
+thickness and color use the same influence and return to their resting values
+when the pointer leaves. CSS resolves theme tokens directly, so the effect
+follows theme changes without measuring colors in JavaScript. The color
+effect adds no layout changes or React renders during pointer movement;
+reduced-motion and touch-only settings keep the normal text color.
+
 ## Layout
 
 - Use consistent content widths and spacing scales.

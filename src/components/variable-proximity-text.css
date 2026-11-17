@@ -1,0 +1,16 @@
+/* Keep the small grade-axis font local to this component. Vite serves it
+   from our own build; its license is in public/fonts/roboto-flex-LICENSE.txt. */
+@font-face {
+  font-family: "Roboto Flex Proximity";
+  src: url("@fontsource-variable/roboto-flex/files/roboto-flex-latin-grad-normal.woff2")
+    format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+.variable-proximity-text {
+  font-family: "Roboto Flex Proximity", var(--font-sans);
+  font-weight: 400;
+  font-variation-settings: "GRAD" 0;
+}
