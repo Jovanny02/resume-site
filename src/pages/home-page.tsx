@@ -1,20 +1,25 @@
 import { VariableProximityText } from "@/components/variable-proximity-text"
-import { typographyDemoText, typographySettings } from "@/data/typography-demo"
+import { heroText, tagLine, typographySettings } from "@/data/home-page-text"
 
 export function HomePage() {
   return (
-    <section aria-labelledby="home-title">
+    <section aria-labelledby="home-title" className="text-center">
       <h1
         id="home-title"
-        className="max-w-4xl text-[clamp(2.25rem,6.5vw,6rem)] leading-[1.12] tracking-tight"
+        className="text-[clamp(2.25rem,6.5vw,6rem)] leading-[1.12] tracking-tight"
       >
         <VariableProximityText
-          text={typographyDemoText}
+          text={heroText}
           {...typographySettings}
-          className="py-6 sm:py-10"
+          className="pt-6 sm:pt-10"
+        />
+        <VariableProximityText
+          text={tagLine}
+          {...typographySettings}
+          className="text-2xl italic sm:text-3xl"
         />
       </h1>
-      <p className="mt-4 max-w-xl leading-relaxed text-muted-foreground">
+      <p className="mt-4 leading-relaxed text-muted-foreground">
         I’m a backend developer exploring new projects and technology in my free time. This is my
         personal portfolio, a place for my experience, interests, and projects.
       </p>

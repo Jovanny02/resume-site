@@ -1,9 +1,10 @@
 // Introduction and selected settings for the homepage.
-export const typographyDemoText = [
+export const heroText = [
   "Hi, I'm Jovanny!",
-  "Software Engineer.",
-  "Tech Nerd.",
+  "Backend Software Engineer."
 ].join("\n")
+
+export const tagLine = "Writing tomorrow’s legacy code today."
 
 export const typographySettings = {
   baseGrade: -160,

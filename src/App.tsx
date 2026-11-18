@@ -21,7 +21,7 @@ function AppLayout() {
       <main
         id="main-content"
         tabIndex={-1}
-        className="mx-auto max-w-5xl px-4 py-12 outline-none sm:px-6 sm:py-20"
+        className="mx-auto px-4 py-12 outline-none sm:px-6 sm:py-20 max-w-7xl"
       >
         <Outlet />
       </main>
