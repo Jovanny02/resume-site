@@ -31,7 +31,7 @@ export function SiteHeader() {
     projectLinks.some(({ to }) => matchPath(to, pathname) !== null)
 
   return (
-    <header className="border-b bg-background">
+    <header className="sticky top-0 z-40 border-b-2 border-secondary bg-background">
       <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-3 px-4 py-4 sm:flex-row sm:px-6">
         <NavigationMenu
           value={openMenu}

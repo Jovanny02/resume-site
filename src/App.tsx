@@ -1,5 +1,6 @@
 import { Outlet, Route, Routes } from "react-router"
 
+import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
 import { AboutPage } from "@/pages/about-page"
 import { HomePage } from "@/pages/home-page"
@@ -10,7 +11,7 @@ import { ResumePage } from "@/pages/resume-page"
 
 function AppLayout() {
   return (
-    <div className="min-h-svh">
+    <div className="flex min-h-svh flex-col">
       <a
         href="#main-content"
         className="sr-only rounded-md bg-background p-3 focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50"
@@ -21,10 +22,11 @@ function AppLayout() {
       <main
         id="main-content"
         tabIndex={-1}
-        className="mx-auto px-4 py-12 outline-none sm:px-6 sm:py-20 max-w-7xl"
+        className="mx-auto w-full max-w-7xl flex-1 scroll-mt-44 px-4 py-12 outline-none sm:scroll-mt-20 sm:px-6 sm:py-20"
       >
         <Outlet />
       </main>
+      <SiteFooter />
     </div>
   )
 }

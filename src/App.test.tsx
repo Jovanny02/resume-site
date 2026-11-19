@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react"
+import { render, screen, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { MemoryRouter } from "react-router"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
@@ -6,7 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import App from "@/App"
 import { ThemeProvider } from "@/components/theme-provider"
 
-const title = /Hi, I'm Jovanny!\s+Software Engineer\.\s+Tech Nerd\./
+const title = /Hi, I'm Jovanny!\s+Backend Software Engineer\./
 
 beforeEach(() => {
   vi.stubGlobal("matchMedia", (query: string) => ({
@@ -51,7 +51,7 @@ describe("portfolio navigation", () => {
 
   it.each([
     ["/", title],
-    ["/resume", "Resume"],
+    ["/resume", "Work Experience"],
     ["/about", "About"],
     ["/projects", "Projects"],
     ["/missing", "Page not found"],
@@ -69,7 +69,9 @@ describe("portfolio navigation", () => {
     const user = userEvent.setup()
     renderApp()
     await user.click(screen.getByRole("link", { name: "Resume" }))
-    expect(screen.getByRole("heading", { name: "Resume" })).toBeInTheDocument()
+    expect(
+      screen.getByRole("heading", { name: "Work Experience" })
+    ).toBeInTheDocument()
     expect(screen.getByRole("link", { name: "Resume" })).toHaveAttribute(
       "aria-current",
       "page"
@@ -95,5 +97,26 @@ describe("portfolio navigation", () => {
       screen.getByRole("heading", { name: "Projects" })
     ).toBeInTheDocument()
     expect(trigger).toHaveAttribute("aria-expanded", "false")
+  })
+})
+
+describe("site footer", () => {
+  it.each(["/", "/about"])("renders contact links on %s", (path) => {
+    renderApp(path)
+    const footer = within(screen.getByRole("contentinfo"))
+
+    expect(footer.getByText("Jovanny Vera")).toBeInTheDocument()
+    expect(footer.getByRole("link", { name: "GitHub" })).toHaveAttribute(
+      "href",
+      "https://github.com/Jovanny02"
+    )
+    expect(footer.getByRole("link", { name: "LinkedIn" })).toHaveAttribute(
+      "href",
+      "https://www.linkedin.com/in/jovanny-vera/"
+    )
+    expect(footer.getByRole("link", { name: "Email" })).toHaveAttribute(
+      "href",
+      "mailto:jovannyvera@comcast.net"
+    )
   })
 })
