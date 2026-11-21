@@ -65,6 +65,31 @@ describe("portfolio navigation", () => {
     ).toBeInTheDocument()
   })
 
+  it("shows the About introduction and portrait", () => {
+    renderApp("/about")
+
+    const about = screen.getByRole("region", { name: "About" })
+    expect(within(about).getByText(/I’m Jovanny Vera/)).toBeVisible()
+    expect(
+      within(about).getByRole("img", { name: "Portrait of Jovanny Vera" })
+    ).toBeVisible()
+  })
+
+  it("credits the author next to each top book", () => {
+    renderApp("/about")
+
+    const topBooks = screen.getByRole("region", { name: "Top Books" })
+    const entries = within(topBooks).getAllByRole("listitem")
+
+    expect(entries.map((entry) => entry.textContent)).toEqual([
+      "The Art of Racing in the Rain by Garth Stein",
+      "Dune by Frank Herbert",
+      "The Martian by Andy Weir",
+      "Artemis by Andy Weir",
+      "The Boy and the Dog by Seishu Hase",
+    ])
+  })
+
   it("offers a PDF download on the resume page", () => {
     renderApp("/resume")
 
