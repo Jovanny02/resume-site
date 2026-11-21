@@ -31,6 +31,8 @@ export function SiteFooter() {
             <a
               href={href}
               aria-label={label}
+              target="_blank" 
+              rel="noopener noreferrer"
               className="grid size-11 place-items-center rounded-full border border-current hover:bg-current/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current"
             >
               {icon}

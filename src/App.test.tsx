@@ -65,6 +65,15 @@ describe("portfolio navigation", () => {
     ).toBeInTheDocument()
   })
 
+  it("offers a PDF download on the resume page", () => {
+    renderApp("/resume")
+
+    const link = screen.getByRole("link", { name: "Download resume (PDF)" })
+
+    expect(link).toHaveAttribute("href", "/resume.pdf")
+    expect(link).toHaveAttribute("download", "Jovanny-Vera-Resume.pdf")
+  })
+
   it("navigates between pages and marks the active link", async () => {
     const user = userEvent.setup()
     renderApp()
