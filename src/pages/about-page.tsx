@@ -28,9 +28,9 @@ export function AboutPage() {
         />
       </section>
 
-      <section aria-labelledby="about-services-title" className="border-t pt-6">
+      <section aria-labelledby="about-sports-title" className="border-t pt-6">
         <h2
-          id="about-services-title"
+          id="about-sports-title"
           className="font-heading text-2xl font-semibold tracking-tight sm:text-3xl tracking-tight after:mt-3 after:block after:h-1 after:rounded-full after:bg-accent w-fit"
         >
           My Sports Teams
