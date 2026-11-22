@@ -6,7 +6,7 @@ type SportsTeamsTimelineProps = {
 }
 
 export function SportsTeamsTimeline({ milestones }: SportsTeamsTimelineProps) {
-  const { resolvedTheme } = useTheme()
+  const { theme } = useTheme()
 
   if (milestones.length === 0) return null
 
@@ -39,7 +39,7 @@ export function SportsTeamsTimeline({ milestones }: SportsTeamsTimelineProps) {
             <div className="flex justify-center gap-2">
               {teams.map(({ name, logo, darkLogo }) => {
                 const logoFile =
-                  resolvedTheme === "dark" && darkLogo ? darkLogo : logo
+                  theme === "dark" && darkLogo ? darkLogo : logo
 
                 return (
                   <img

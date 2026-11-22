@@ -95,7 +95,7 @@ describe("portfolio navigation", () => {
 
     const link = screen.getByRole("link", { name: "Download resume (PDF)" })
 
-    expect(link).toHaveAttribute("href", "/resume.pdf")
+    expect(link).toHaveAttribute("href", "/Resume.pdf")
     expect(link).toHaveAttribute("download", "Jovanny-Vera-Resume.pdf")
   })
 

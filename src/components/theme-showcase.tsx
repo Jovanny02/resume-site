@@ -1,4 +1,4 @@
-import { AlertCircle, Palette, SunMoon } from "lucide-react"
+import { AlertCircle, Palette } from "lucide-react"
 
 import { useTheme } from "@/components/theme-provider"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -43,10 +43,6 @@ export function ThemeShowcase() {
           </Button>
           <Button variant="outline" onClick={() => setTheme("dark")}>
             Dark
-          </Button>
-          <Button variant="outline" onClick={() => setTheme("system")}>
-            <SunMoon aria-hidden="true" />
-            System
           </Button>
         </div>
       </div>

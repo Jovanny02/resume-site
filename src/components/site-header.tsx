@@ -23,7 +23,7 @@ function HeaderNavLabel({ children }: { children: string }) {
 }
 
 export function SiteHeader() {
-  const { resolvedTheme, setTheme } = useTheme()
+  const { theme, setTheme } = useTheme()
   const [openMenu, setOpenMenu] = useState<string | null>(null)
   const { pathname } = useLocation()
   const isProjectsPage =
@@ -85,13 +85,13 @@ export function SiteHeader() {
           variant="outline"
           size="icon"
           aria-label={
-            resolvedTheme === "dark"
+            theme === "dark"
               ? "Switch to light theme"
               : "Switch to dark theme"
           }
-          onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
         >
-          {resolvedTheme === "dark" ? (
+          {theme === "dark" ? (
             <Sun aria-hidden="true" />
           ) : (
             <Moon aria-hidden="true" />

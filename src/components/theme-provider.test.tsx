@@ -13,32 +13,21 @@ afterEach(() => {
   document.documentElement.classList.remove("dark", "light")
 })
 
-it("defaults to dark with no saved preference", () => {
+it.each<[string | null, string]>([
+  [null, "light"],
+  ["light", "light"],
+  ["dark", "dark"],
+  ["system", "light"],
+  ["invalid", "light"],
+])("applies stored preference %s as %s", (stored, expected) => {
+  if (stored !== null) localStorage.setItem("theme", stored)
   render(
     <ThemeProvider>
       <p>Theme preview</p>
     </ThemeProvider>
   )
-  expect(document.documentElement).toHaveClass("dark")
-})
-
-it("respects an explicitly saved light preference", () => {
-  localStorage.setItem("theme", "light")
-  render(
-    <ThemeProvider>
-      <p>Theme preview</p>
-    </ThemeProvider>
+  expect(document.documentElement).toHaveClass(expected)
+  expect(document.documentElement).not.toHaveClass(
+    expected === "light" ? "dark" : "light"
   )
-  expect(document.documentElement).toHaveClass("light")
-  expect(document.documentElement).not.toHaveClass("dark")
-})
-
-it("falls back to dark for an invalid stored preference", () => {
-  localStorage.setItem("theme", "invalid")
-  render(
-    <ThemeProvider>
-      <p>Theme preview</p>
-    </ThemeProvider>
-  )
-  expect(document.documentElement).toHaveClass("dark")
 })

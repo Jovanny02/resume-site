@@ -17,10 +17,9 @@ Use semantic shadcn theme tokens rather than hardcoded colors.
 
 Following [shadcn's theming convention](https://ui.shadcn.com/docs/theming),
 `src/index.css` defines light values in `:root` and dark overrides in `.dark`.
-The existing `ThemeProvider` toggles `.dark` on `<html>`; React components
-keep the same classes in both modes. Dark mode is the default for new visits;
-a saved light, dark, or system preference takes precedence. The initial HTML
-also starts with `.dark` so the page uses the dark palette before React mounts.
+Before React mounts, the page uses the light palette from `:root`.
+`ThemeProvider` applies the saved light or dark preference to `<html>` and
+defaults to light when the preference is missing or invalid.
 `color-scheme` matches native browser controls to the active mode.
 
 `@theme inline` connects a CSS variable to Tailwind. For example:

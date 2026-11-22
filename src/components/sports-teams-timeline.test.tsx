@@ -30,7 +30,11 @@ describe("SportsTeamsTimeline", () => {
           },
         ]}
       />,
-      { wrapper: ThemeProvider }
+      {
+        wrapper: ({ children }) => (
+          <ThemeProvider defaultTheme="dark">{children}</ThemeProvider>
+        ),
+      }
     )
 
     const timeline = screen.getByRole("list", {

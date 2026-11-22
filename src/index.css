@@ -49,7 +49,7 @@
 }
 
 /* :root holds the light palette; .dark overrides it.
-   ThemeProvider starts in dark mode unless a saved preference exists.
+   ThemeProvider defaults to light mode unless a valid preference is saved.
    Surface tokens set fills; their -foreground partners set text/icon colors.
    @theme inline above exposes these values as Tailwind utilities. */
 :root {

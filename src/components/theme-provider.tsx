@@ -1,8 +1,6 @@
 import * as React from "react"
 
-// todo remove system as a theme
-type Theme = "dark" | "light" | "system"
-type ResolvedTheme = "dark" | "light"
+type Theme = "dark" | "light"
 
 type ThemeProviderProps = {
   children: React.ReactNode
@@ -13,31 +11,15 @@ type ThemeProviderProps = {
 
 type ThemeProviderState = {
   theme: Theme
-  resolvedTheme: ResolvedTheme
   setTheme: (theme: Theme) => void
 }
-
-const COLOR_SCHEME_QUERY = "(prefers-color-scheme: dark)"
-const THEME_VALUES: Theme[] = ["dark", "light", "system"]
 
 const ThemeProviderContext = React.createContext<
   ThemeProviderState | undefined
 >(undefined)
 
 function isTheme(value: string | null): value is Theme {
-  if (value === null) {
-    return false
-  }
-
-  return THEME_VALUES.includes(value as Theme)
-}
-
-function getSystemTheme(): ResolvedTheme {
-  if (window.matchMedia(COLOR_SCHEME_QUERY).matches) {
-    return "dark"
-  }
-
-  return "light"
+  return value === "light" || value === "dark"
 }
 
 function disableTransitionsTemporarily() {
@@ -61,7 +43,7 @@ function disableTransitionsTemporarily() {
 
 export function ThemeProvider({
   children,
-  defaultTheme = "dark",
+  defaultTheme = "light",
   storageKey = "theme",
   disableTransitionOnChange = true,
   ...props
@@ -74,19 +56,6 @@ export function ThemeProvider({
 
     return defaultTheme
   })
-  const subscribeToSystemTheme = React.useCallback(
-    (onChange: () => void) => {
-      if (theme !== "system") return () => {}
-      const mediaQuery = window.matchMedia(COLOR_SCHEME_QUERY)
-      mediaQuery.addEventListener("change", onChange)
-      return () => mediaQuery.removeEventListener("change", onChange)
-    },
-    [theme]
-  )
-  const resolvedTheme = React.useSyncExternalStore(
-    subscribeToSystemTheme,
-    () => (theme === "system" ? getSystemTheme() : theme)
-  )
 
   const setTheme = React.useCallback(
     (nextTheme: Theme) => {
@@ -96,43 +65,16 @@ export function ThemeProvider({
     [storageKey]
   )
 
-  const applyTheme = React.useCallback(
-    (nextTheme: Theme) => {
-      const root = document.documentElement
-      const resolvedTheme =
-        nextTheme === "system" ? getSystemTheme() : nextTheme
-      const restoreTransitions = disableTransitionOnChange
-        ? disableTransitionsTemporarily()
-        : null
-
-      root.classList.remove("light", "dark")
-      root.classList.add(resolvedTheme)
-
-      if (restoreTransitions) {
-        restoreTransitions()
-      }
-    },
-    [disableTransitionOnChange]
-  )
-
   React.useEffect(() => {
-    applyTheme(theme)
+    const root = document.documentElement
+    const restoreTransitions = disableTransitionOnChange
+      ? disableTransitionsTemporarily()
+      : null
 
-    if (theme !== "system") {
-      return undefined
-    }
-
-    const mediaQuery = window.matchMedia(COLOR_SCHEME_QUERY)
-    const handleChange = () => {
-      applyTheme("system")
-    }
-
-    mediaQuery.addEventListener("change", handleChange)
-
-    return () => {
-      mediaQuery.removeEventListener("change", handleChange)
-    }
-  }, [theme, applyTheme])
+    root.classList.remove("light", "dark")
+    root.classList.add(theme)
+    restoreTransitions?.()
+  }, [theme, disableTransitionOnChange])
 
   React.useEffect(() => {
     const handleStorageChange = (event: StorageEvent) => {
@@ -162,10 +104,9 @@ export function ThemeProvider({
   const value = React.useMemo(
     () => ({
       theme,
-      resolvedTheme,
       setTheme,
     }),
-    [theme, resolvedTheme, setTheme]
+    [theme, setTheme]
   )
 
   return (
