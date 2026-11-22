@@ -10,7 +10,6 @@ export type Project = {
   image: { src: string; alt: string }
   technologies: readonly string[]
   githubUrl?: string
-  placeholder?: boolean
 }
 
 export const projects: readonly Project[] = [

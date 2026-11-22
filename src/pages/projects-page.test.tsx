@@ -43,6 +43,24 @@ it("shows projects in timeline order with their years, images, and technologies"
     ["Ubuntu", "No-IP", "Certbot", "Docker", "nginx", "Immich", "Plex"],
     ["Python", "Tkinter", "Tcl"],
   ])
+
+  const technologyBadges = technologyLists.flatMap((list) =>
+    within(list).getAllByRole("listitem")
+  )
+  const tkinterBadge = within(timeline).getByText("Tkinter")
+  expect(within(tkinterBadge).queryByAltText("")).not.toBeInTheDocument()
+  expect(tkinterBadge.querySelector('svg[aria-hidden="true"]')).toBeVisible()
+
+  const brandedBadges = technologyBadges.filter(
+    (badge) => !badge.contains(tkinterBadge)
+  )
+  const iconSources = brandedBadges.map((badge) => {
+    const icon = within(badge).getByAltText("")
+    expect(icon).toBeVisible()
+    expect(icon).toHaveAttribute("src")
+    return icon.getAttribute("src")
+  })
+  expect(new Set(iconSources).size).toBe(brandedBadges.length)
 })
 
 it("shows a GitHub link only for projects with a repository URL", () => {
