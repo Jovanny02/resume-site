@@ -127,13 +127,14 @@ from assistive technology and paired with one uninterrupted accessible copy.
 Reduced-motion and touch-only settings render plain text without animation
 or additional tab stops. The prototype uses the existing theme tokens.
 
-Each letter's spring-smoothed proximity value also blends its color from
-`foreground` toward `primary`, using CSS `color-mix(in oklab, ...)`. Both
-thickness and color use the same influence and return to their resting values
-when the pointer leaves the influence radius or browser window. CSS resolves theme tokens directly, so the effect
-follows theme changes without measuring colors in JavaScript. The color
-effect adds no layout changes or React renders during pointer movement;
-reduced-motion and touch-only settings keep the normal text color.
+On the homepage, each letter responds to the horizontal distance between its
+center and the pointer. The same spring-smoothed value controls stroke
+thickness and reveals the `primary` color from the bottom of the letter.
+Set `colorReveal` to `false` in `src/data/home-page-text.ts` to blend each
+letter from `foreground` to `primary` instead. Both styles follow theme
+changes and return to rest when the pointer leaves the influence range or
+browser window. Reduced-motion and touch-only settings keep the normal text
+color.
 
 ## Layout
 

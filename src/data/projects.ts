@@ -10,7 +10,23 @@ export type Project = {
   image: { src: string; alt: string }
   technologies: readonly string[]
   githubUrl?: string
+  detailsPath?: string
 }
+
+export const gradingGuiProject = {
+  id: "grading-gui",
+  title: "Digital Design Grading GUI",
+  year: 2021,
+  description:
+    "A desktop tool for Digital Design teaching assistants to organize submissions, run ModelSim testbenches, and review saved results. The GUI integrated auto-grading scripts developed by another teaching assistant which greatly sped up the grading process.",
+  image: {
+    src: gradingGuiImage,
+    alt: "Digital Design Grading GUI showing project setup and simulation results",
+  },
+  technologies: ["Python", "Tkinter", "Tcl"],
+  githubUrl: "https://github.com/Jovanny02/GradingGUI",
+  detailsPath: "/projects/grading-gui",
+} satisfies Project
 
 export const projects: readonly Project[] = [
   {
@@ -46,17 +62,5 @@ export const projects: readonly Project[] = [
       "Plex",
     ],
   },
-  {
-    id: "grading-gui",
-    title: "Digital Design Grading GUI",
-    year: 2021,
-    description:
-      "A desktop tool for Digital Design teaching assistants to organize submissions, run ModelSim testbenches, and review saved results. The GUI integrates Keeth Smith’s auto-grading scripts.",
-    image: {
-      src: gradingGuiImage,
-      alt: "Digital Design Grading GUI showing project setup and simulation results",
-    },
-    technologies: ["Python", "Tkinter", "Tcl"],
-    githubUrl: "https://github.com/Jovanny02/GradingGUI",
-  },
+  gradingGuiProject,
 ]

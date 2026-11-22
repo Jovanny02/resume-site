@@ -6,6 +6,7 @@ import {
   Server,
   type LucideIcon,
 } from "lucide-react"
+import { Link } from "react-router"
 
 import githubIcon from "@/assets/github.svg"
 import certbotIcon from "@/assets/technologies/certbot.png"
@@ -26,6 +27,7 @@ import { Badge } from "@/components/ui/badge"
 import { buttonVariants } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import type { Project } from "@/data/projects"
+import { cn } from "@/lib/utils"
 
 const technologyIcons: Partial<Record<string, LucideIcon | string>> = {
   React: reactIcon,
@@ -54,7 +56,13 @@ type ProjectCardProps = {
 
 export function ProjectCard({ project }: ProjectCardProps) {
   return (
-    <Card className="border border-border shadow-none sm:[--card-spacing:--spacing(6)]">
+    <Card
+      className={cn(
+        "border border-border shadow-none sm:[--card-spacing:--spacing(6)]",
+        project.detailsPath &&
+          "relative hover:border-accent has-[h2_a:focus-visible]:border-accent has-[h2_a:focus-visible]:outline-2 has-[h2_a:focus-visible]:outline-offset-2 has-[h2_a:focus-visible]:outline-ring motion-safe:transition-colors"
+      )}
+    >
       <CardContent className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,2.8fr)] sm:gap-6">
         <img
           src={project.image.src}
@@ -69,7 +77,16 @@ export function ProjectCard({ project }: ProjectCardProps) {
           <div className="flex items-start justify-between gap-3">
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
               <h2 className="font-heading text-xl font-semibold tracking-tight sm:text-2xl">
-                {project.title}
+                {project.detailsPath ? (
+                  <Link
+                    to={project.detailsPath}
+                    className="group-hover/card:text-accent after:absolute after:inset-0 focus-visible:text-accent focus-visible:outline-none motion-safe:transition-colors"
+                  >
+                    {project.title}
+                  </Link>
+                ) : (
+                  project.title
+                )}
               </h2>
             </div>
             {project.githubUrl && (
@@ -82,7 +99,10 @@ export function ProjectCard({ project }: ProjectCardProps) {
                 className={buttonVariants({
                   variant: "outline",
                   size: "icon",
-                  className: "size-10 rounded-full",
+                  className: cn(
+                    "size-10 rounded-full",
+                    project.detailsPath && "relative z-10"
+                  ),
                 })}
               >
                 <img src={githubIcon} alt="" className="size-5 dark:invert" />

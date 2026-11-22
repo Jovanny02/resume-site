@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { NavLink } from "react-router"
 
 import { ThemeShowcase } from "@/components/theme-showcase"
@@ -8,9 +9,18 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { Switch } from "@/components/ui/switch"
+import { VariableProximityText } from "@/components/variable-proximity-text"
+import { heroText, tagLine, typographySettings } from "@/data/home-page-text"
 import { navigationItems, projectLinks } from "@/data/navigation"
 
 const previewLinks = [...navigationItems, ...projectLinks]
+
+const proximityOptions = [
+  { key: "earlyColor", label: "Bring in green sooner" },
+  { key: "colorReveal", label: "Reveal color from the bottom" },
+  { key: "horizontalOnly", label: "Horizontal distance only" },
+] as const
 
 const underlinePreviews = [
   {
@@ -34,6 +44,12 @@ const underlinePreviews = [
 ] as const
 
 export function UIPlayGroundPage() {
+  const [proximityEffects, setProximityEffects] = useState({
+    earlyColor: false,
+    colorReveal: false,
+    horizontalOnly: false,
+  })
+
   return (
     <section aria-labelledby="playground-title">
       <h1
@@ -42,6 +58,57 @@ export function UIPlayGroundPage() {
       >
         UI Playground
       </h1>
+      <section aria-labelledby="proximity-preview-title" className="mt-8">
+        <Card>
+          <CardHeader>
+            <h2 id="proximity-preview-title" className="text-xl font-semibold">
+              Proximity text effects
+            </h2>
+            <CardDescription>
+              Sweep your pointer across the text. Turn effects on individually
+              or combine them. With every switch off, you get the original
+              effect.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <fieldset className="grid gap-2 sm:grid-cols-2">
+              <legend className="sr-only">Proximity effects</legend>
+              {proximityOptions.map(({ key, label }) => (
+                <div key={key} className="flex min-h-10 items-center gap-3">
+                  <Switch
+                    id={`proximity-${key}`}
+                    checked={proximityEffects[key]}
+                    onCheckedChange={(checked) =>
+                      setProximityEffects((effects) => ({
+                        ...effects,
+                        [key]: checked,
+                      }))
+                    }
+                  />
+                  <label htmlFor={`proximity-${key}`} className="text-sm">
+                    {label}
+                  </label>
+                </div>
+              ))}
+            </fieldset>
+            <div className="mt-4 rounded-md bg-background px-3 py-8 text-center">
+              <h3 className="text-[clamp(2.25rem,6.5vw,6rem)] leading-[1.12] tracking-tight">
+                <VariableProximityText
+                  text={heroText}
+                  {...typographySettings}
+                  effects={proximityEffects}
+                />
+                <VariableProximityText
+                  text={tagLine}
+                  {...typographySettings}
+                  effects={proximityEffects}
+                  className="text-2xl italic sm:text-3xl"
+                />
+              </h3>
+            </div>
+          </CardContent>
+        </Card>
+      </section>
       <section
         aria-labelledby="underline-preview-title"
         className="mt-8 space-y-4"

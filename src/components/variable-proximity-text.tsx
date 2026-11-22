@@ -13,6 +13,12 @@ import "./variable-proximity-text.css"
 
 type Point = { x: number; y: number }
 
+type ProximityEffects = {
+  earlyColor?: boolean
+  colorReveal?: boolean
+  horizontalOnly?: boolean
+}
+
 type VariableProximityTextProps = {
   text: string
   radius?: number
@@ -21,6 +27,7 @@ type VariableProximityTextProps = {
   peakGrade?: number
   /** 0–1: strength of the configured thickness and color effects. */
   intensity?: number
+  effects?: ProximityEffects
   className?: string
 }
 
@@ -33,6 +40,7 @@ type ProximityLetterProps = {
   intensity: number
   baseGrade: number
   peakGrade: number
+  effects?: ProximityEffects
 }
 
 const interactionQuery =
@@ -62,19 +70,22 @@ function ProximityLetter({
   intensity,
   baseGrade,
   peakGrade,
+  effects,
 }: ProximityLetterProps) {
   const targetInfluence = useTransform(() => {
     const position = pointer.get()
     const center = centers.get()[index]
     if (!position || !center || radius <= 0) return 0
 
-    const distance = Math.hypot(position.x - center.x, position.y - center.y)
+    const deltaX = position.x - center.x
+    const distance = effects?.horizontalOnly
+      ? Math.abs(deltaX)
+      : Math.hypot(deltaX, position.y - center.y)
     const proximity = Math.max(0, 1 - distance / radius)
     // Smoothstep softens both ends of the influence radius.
     const influence = proximity * proximity * (3 - 2 * proximity)
     return influence * Math.min(1, Math.max(0, intensity))
   })
-  // Smooth once so thickness and color always follow the same influence.
   const influence = useSpring(targetInfluence, {
     stiffness: 180,
     damping: 40,
@@ -93,22 +104,40 @@ function ProximityLetter({
     (value) => (value - fixedGrade) * 0.00012
   )
   const textStrokeWidth = useMotionTemplate`${strokeWidth}em`
-  const primaryPercentage = useTransform(influence, (value) => value * 100)
+  const colorProgress = useTransform(influence, (value) =>
+    effects?.earlyColor ? value * (2 - value) : value
+  )
+  const primaryPercentage = useTransform(colorProgress, (value) => value * 100)
   // Resolve theme tokens in CSS, including when the theme changes in place.
   const color = useMotionTemplate`color-mix(in oklab, var(--foreground), var(--primary) ${primaryPercentage}%)`
+  // Extend the clip beyond the letter box to accommodate strokes and italics.
+  const revealTop = useTransform(colorProgress, (value) => 125 - value * 150)
+  const revealClip = useMotionTemplate`inset(${revealTop}% -0.25em -25%)`
 
   return (
     <motion.span
       data-proximity-letter=""
-      className="inline-block"
+      className="relative inline-block"
       style={{
         fontVariationSettings: `"GRAD" ${fixedGrade}`,
         WebkitTextStrokeWidth: textStrokeWidth,
         WebkitTextStrokeColor: "currentColor",
-        color,
+        color: effects?.colorReveal ? "var(--foreground)" : color,
       }}
     >
       {character}
+      {effects?.colorReveal && (
+        <motion.span
+          className="pointer-events-none absolute inset-0 select-none"
+          style={{
+            clipPath: revealClip,
+            color: "var(--primary)",
+            WebkitTextStrokeColor: "currentColor",
+          }}
+        >
+          {character}
+        </motion.span>
+      )}
     </motion.span>
   )
 }
@@ -120,6 +149,7 @@ export function VariableProximityText({
   intensity = 1,
   baseGrade = 0,
   peakGrade = 25,
+  effects,
   className,
 }: VariableProximityTextProps) {
   const containerRef = useRef<HTMLSpanElement>(null)
@@ -239,6 +269,7 @@ export function VariableProximityText({
                       intensity={intensity}
                       baseGrade={restingGrade}
                       peakGrade={nearCursorGrade}
+                      effects={effects}
                     />
                   ))}
                 </span>

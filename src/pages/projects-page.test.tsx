@@ -1,10 +1,19 @@
 import { render, screen, within } from "@testing-library/react"
+import { MemoryRouter } from "react-router"
 import { expect, it } from "vitest"
 
 import { ProjectsPage } from "@/pages/projects-page"
 
+function renderProjectsPage() {
+  render(
+    <MemoryRouter>
+      <ProjectsPage />
+    </MemoryRouter>
+  )
+}
+
 it("shows projects in timeline order with their years, images, and technologies", () => {
-  render(<ProjectsPage />)
+  renderProjectsPage()
 
   const timeline = screen.getByRole("list", { name: "Project timeline" })
   expect(
@@ -64,7 +73,7 @@ it("shows projects in timeline order with their years, images, and technologies"
 })
 
 it("shows a GitHub link only for projects with a repository URL", () => {
-  render(<ProjectsPage />)
+  renderProjectsPage()
 
   const timeline = within(
     screen.getByRole("list", { name: "Project timeline" })
@@ -72,7 +81,7 @@ it("shows a GitHub link only for projects with a repository URL", () => {
   const repoLink = timeline.getByRole("link", {
     name: "Resume Website on GitHub (opens in a new tab)",
   })
-  expect(timeline.getAllByRole("link")).toHaveLength(2)
+  expect(timeline.getAllByRole("link", { name: /on GitHub/ })).toHaveLength(2)
   expect(repoLink).toHaveAttribute(
     "href",
     "https://github.com/Jovanny02/resume-site"
@@ -83,4 +92,18 @@ it("shows a GitHub link only for projects with a repository URL", () => {
       name: "Digital Design Grading GUI on GitHub (opens in a new tab)",
     })
   ).toHaveAttribute("href", "https://github.com/Jovanny02/GradingGUI")
+})
+
+it("links only the Grading GUI card to a project details page", () => {
+  renderProjectsPage()
+
+  const timeline = within(
+    screen.getByRole("list", { name: "Project timeline" })
+  )
+  const detailsLink = timeline.getByRole("link", {
+    name: "Digital Design Grading GUI",
+  })
+
+  expect(detailsLink).toHaveAttribute("href", "/projects/grading-gui")
+  expect(timeline.getAllByRole("link")).toHaveLength(3)
 })

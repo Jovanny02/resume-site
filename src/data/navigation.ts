@@ -1,4 +1,13 @@
-import { FileText, House, UserRound, FolderOpen, Brush } from "lucide-react"
+import {
+  AppWindow,
+  Brush,
+  FileText,
+  FolderOpen,
+  House,
+  UserRound,
+} from "lucide-react"
+
+import { gradingGuiProject } from "@/data/projects"
 
 export const navigationItems = [
   { label: "Home", to: "/", icon: House },
@@ -6,8 +15,12 @@ export const navigationItems = [
   { label: "About", to: "/about", icon: UserRound },
 ] as const
 
-// Add links here when individual project pages are introduced.
 export const projectLinks = [
   { label: "All projects", to: "/projects", icon: FolderOpen },
-  { label: "UI Playground", to: "/ui-playground", icon: Brush  }
+  {
+    label: gradingGuiProject.title,
+    to: gradingGuiProject.detailsPath,
+    icon: AppWindow,
+  },
+  { label: "UI Playground", to: "/ui-playground", icon: Brush },
 ]

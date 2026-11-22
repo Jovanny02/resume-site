@@ -54,6 +54,7 @@ describe("portfolio navigation", () => {
     ["/resume", "Work Experience"],
     ["/about", "About"],
     ["/projects", "Projects"],
+    ["/projects/grading-gui", "Digital Design Grading GUI"],
     ["/missing", "Page not found"],
   ])("renders %s directly", (path, heading) => {
     renderApp(path)
@@ -131,6 +132,30 @@ describe("portfolio navigation", () => {
       screen.getByRole("heading", { name: "Projects" })
     ).toBeInTheDocument()
     expect(trigger).toHaveAttribute("aria-expanded", "false")
+  })
+
+  it("opens the Grading GUI placeholder from the card with the keyboard", async () => {
+    const user = userEvent.setup()
+    renderApp("/projects")
+
+    const timeline = within(
+      screen.getByRole("list", { name: "Project timeline" })
+    )
+    timeline.getByRole("link", { name: "Digital Design Grading GUI" }).focus()
+    await user.keyboard("{Enter}")
+
+    expect(
+      screen.getByRole("heading", {
+        level: 1,
+        name: "Digital Design Grading GUI",
+      })
+    ).toBeVisible()
+    expect(screen.getByText("Project details coming soon.")).toBeVisible()
+
+    await user.click(screen.getByRole("link", { name: "Back to all projects" }))
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Projects" })
+    ).toBeVisible()
   })
 })
 

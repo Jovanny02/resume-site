@@ -61,7 +61,7 @@ export function SiteHeader() {
                 <FolderOpen className="size-4" aria-hidden="true" />
                 <HeaderNavLabel>Projects</HeaderNavLabel>
               </NavigationMenuTrigger>
-              <NavigationMenuContent className="w-60">
+              <NavigationMenuContent className="w-64">
                 {projectLinks.map(({ label, to, icon: Icon }) => (
                   <NavigationMenuLink
                     key={to}
@@ -74,9 +74,6 @@ export function SiteHeader() {
                     <HeaderNavLabel>{label}</HeaderNavLabel>
                   </NavigationMenuLink>
                 ))}
-                <p className="px-2 py-3 text-xs text-muted-foreground">
-                  Individual projects coming soon.
-                </p>
               </NavigationMenuContent>
             </NavigationMenuItem>
           </NavigationMenuList>
@@ -85,9 +82,7 @@ export function SiteHeader() {
           variant="outline"
           size="icon"
           aria-label={
-            theme === "dark"
-              ? "Switch to light theme"
-              : "Switch to dark theme"
+            theme === "dark" ? "Switch to light theme" : "Switch to dark theme"
           }
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
         >

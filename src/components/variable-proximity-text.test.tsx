@@ -11,6 +11,7 @@ import {
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 import { VariableProximityText } from "@/components/variable-proximity-text"
+import { HomePage } from "@/pages/home-page"
 
 let reducedMotion = false
 let hoverPointer = true
@@ -104,7 +105,7 @@ beforeEach(() => {
   vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(
     function (this: HTMLElement) {
       if (this.hasAttribute("data-proximity-letter")) {
-        const x = this.textContent === "A" ? 30 : secondLetterX
+        const x = this.firstChild?.textContent === "A" ? 30 : secondLetterX
         return new DOMRect(x, 40, 20, 20)
       }
       return new DOMRect(0, 0, 400, 100)
@@ -197,6 +198,59 @@ describe("variable proximity text", () => {
     })
   })
 
+  it("follows horizontal distance regardless of pointer height when enabled", async () => {
+    const sample = (horizontalOnly: boolean) => (
+      <h2>
+        <VariableProximityText
+          text="A B"
+          radius={120}
+          peakGrade={150}
+          effects={{ horizontalOnly }}
+        />
+      </h2>
+    )
+    const { rerender } = render(sample(true))
+    const heading = screen.getByRole("heading", { name: "A B" })
+    const a = within(heading).getByText("A")
+    const b = within(heading).getByText("B")
+
+    fireEvent.pointerMove(heading, { clientX: 40, clientY: 500 })
+    await waitFor(() => expect(strokeOf(a)).toBeGreaterThan(0.015))
+    expect(strokeOf(b)).toBe(0)
+
+    fireEvent.pointerMove(heading, { clientX: 300, clientY: 500 })
+    await waitFor(
+      () => {
+        expect(strokeOf(a)).toBeLessThan(0.0002)
+        expect(strokeOf(b)).toBeGreaterThan(0.015)
+      },
+      { timeout: 3000 }
+    )
+
+    rerender(sample(false))
+    await waitFor(() => expect(strokeOf(b)).toBeLessThan(0.0002), {
+      timeout: 3000,
+    })
+  })
+
+  it("reveals color on the home page when the pointer is far below the heading", async () => {
+    render(<HomePage />)
+    const heading = screen.getByRole("heading", {
+      name: /Hi, I'm Jovanny!\s+Backend Software Engineer\.\s*Writing tomorrow’s legacy code today\./,
+    })
+    const paintLayer = { selector: "[data-proximity-letter] > span" }
+    const headlineColor = within(heading).getByText("H", paintLayer)
+    const taglineColor = within(heading).getByText("W", paintLayer)
+    expect(headlineColor.style.clipPath).toContain("125%")
+    expect(taglineColor.style.clipPath).toContain("125%")
+
+    fireEvent.pointerMove(window, { clientX: 300, clientY: 800 })
+    await waitFor(() => {
+      expect(parseFloat(headlineColor.style.clipPath.slice(6))).toBeLessThan(50)
+      expect(parseFloat(taglineColor.style.clipPath.slice(6))).toBeLessThan(50)
+    })
+  })
+
   it("remeasures letters when the text container resizes", async () => {
     const { heading } = renderSample()
     const b = within(heading).getByText("B")
@@ -210,17 +264,16 @@ describe("variable proximity text", () => {
     render(
       <h2>
         <VariableProximityText
-          text="A"
+          text="A B"
           radius={120}
           baseGrade={-200}
           peakGrade={150}
         />
       </h2>
     )
-    const letter = within(screen.getByRole("heading", { name: "A" })).getByText(
-      "A",
-      { selector: "[data-proximity-letter]" }
-    )
+    const letter = within(
+      screen.getByRole("heading", { name: "A B" })
+    ).getByText("A")
     expect(gradeOf(letter)).toBe(-200)
     fireEvent.pointerMove(letter, {
       clientX: 40,
@@ -233,6 +286,32 @@ describe("variable proximity text", () => {
       )
     )
     expect(gradeOf(letter)).toBe(-200)
+  })
+
+  it("brings in more color at the same distance without changing stroke width", async () => {
+    const sample = (earlyColor: boolean) => (
+      <h2>
+        <VariableProximityText
+          text="A B"
+          radius={120}
+          peakGrade={150}
+          effects={{ earlyColor }}
+        />
+      </h2>
+    )
+    const { rerender } = render(sample(false))
+    const letter = within(
+      screen.getByRole("heading", { name: "A B" })
+    ).getByText("A")
+    const primaryPercentage = () =>
+      Number(letter.style.color.match(/([\d.]+)%\)$/)?.[1])
+
+    fireEvent.pointerMove(letter, { clientX: 100, clientY: 50 })
+    await waitFor(() => expect(primaryPercentage()).toBeCloseTo(50, 0))
+
+    rerender(sample(true))
+    await waitFor(() => expect(primaryPercentage()).toBeCloseTo(75, 0))
+    expect(strokeOf(letter)).toBeCloseTo(0.009, 3)
   })
 
   it("keeps tracking a stationary pointer when letters are remeasured", async () => {

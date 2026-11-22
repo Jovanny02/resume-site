@@ -2,7 +2,9 @@ import { Outlet, Route, Routes } from "react-router"
 
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
+import { gradingGuiProject } from "@/data/projects"
 import { AboutPage } from "@/pages/about-page"
+import { GradingGuiPage } from "@/pages/grading-gui-page"
 import { HomePage } from "@/pages/home-page"
 import { NotFoundPage } from "@/pages/not-found-page"
 import { ProjectsPage } from "@/pages/projects-page"
@@ -39,6 +41,10 @@ export function App() {
         <Route path="resume" element={<ResumePage />} />
         <Route path="about" element={<AboutPage />} />
         <Route path="projects" element={<ProjectsPage />} />
+        <Route
+          path={gradingGuiProject.detailsPath}
+          element={<GradingGuiPage />}
+        />
         <Route path="ui-playground" element={<UIPlayGroundPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
