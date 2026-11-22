@@ -1,9 +1,10 @@
+import { SportsTeamsTimeline } from "@/components/sports-teams-timeline"
 import { aboutPageText } from "@/data/about-page-text"
 import { contact } from "@/data/contact"
 
 export function AboutPage() {
   return (
-    <div className="mx-auto max-w-5xl space-y-12 sm:space-y-16">
+    <div className="mx-auto max-w-7xl space-y-12 sm:space-y-16">
       <section
         aria-labelledby="about-title"
         className="grid items-center gap-8 md:grid-cols-[3fr_2fr] md:gap-12 lg:gap-20"
@@ -35,6 +36,7 @@ export function AboutPage() {
         >
           My Sports Teams
         </h2>
+        <SportsTeamsTimeline milestones={aboutPageText.sportsMilestones} />
       </section>
 
       <section aria-labelledby="about-books-title" className="border-t pt-6">
