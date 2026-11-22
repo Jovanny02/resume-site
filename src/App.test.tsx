@@ -134,7 +134,7 @@ describe("portfolio navigation", () => {
     expect(trigger).toHaveAttribute("aria-expanded", "false")
   })
 
-  it("opens the Grading GUI placeholder from the card with the keyboard", async () => {
+  it("opens the Grading GUI project from the card with the keyboard", async () => {
     const user = userEvent.setup()
     renderApp("/projects")
 
@@ -150,7 +150,21 @@ describe("portfolio navigation", () => {
         name: "Digital Design Grading GUI",
       })
     ).toBeVisible()
-    expect(screen.getByText("Project details coming soon.")).toBeVisible()
+    expect(
+      screen.getByRole("region", { name: "Project screenshots" })
+    ).toBeVisible()
+    const projectRepository = screen.getByRole("link", {
+      name: "Digital Design Grading GUI on GitHub (opens in a new tab)",
+    })
+    expect(projectRepository).toHaveAttribute(
+      "href",
+      "https://github.com/Jovanny02/GradingGUI"
+    )
+    expect(projectRepository).toHaveAttribute("target", "_blank")
+    expect(screen.getByRole("link", { name: "Keeth Smith" })).toHaveAttribute(
+      "href",
+      "https://github.com/KeethSmith"
+    )
 
     await user.click(screen.getByRole("link", { name: "Back to all projects" }))
     expect(
