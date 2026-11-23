@@ -6,7 +6,7 @@ export function SkillsSection() {
     <section aria-labelledby="skills-title" className="mt-16">
       <h2
         id="skills-title"
-        className="mb-8 w-fit font-heading text-4xl font-bold tracking-tight after:mt-3 after:block after:h-1 after:rounded-full after:bg-accent sm:mb-10 sm:text-6xl lg:text-7xl"
+        className="mb-8 w-fit font-heading text-4xl font-bold tracking-tight after:mt-3 after:block after:h-1 after:rounded-full after:bg-accent sm:mb-10 sm:text-5xl md:text-6xl"
       >
         Skills
       </h2>

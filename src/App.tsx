@@ -1,4 +1,11 @@
-import { Outlet, Route, Routes } from "react-router"
+import { useLayoutEffect } from "react"
+import {
+  Outlet,
+  Route,
+  Routes,
+  useLocation,
+  useNavigationType,
+} from "react-router"
 
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
@@ -8,10 +15,19 @@ import { GradingGuiPage } from "@/pages/grading-gui-page"
 import { HomePage } from "@/pages/home-page"
 import { NotFoundPage } from "@/pages/not-found-page"
 import { ProjectsPage } from "@/pages/projects-page"
-import { UIPlayGroundPage } from "@/pages/ui-playground-page"
 import { ResumePage } from "@/pages/resume-page"
 
 function AppLayout() {
+  const { pathname, hash } = useLocation()
+  const navigationType = useNavigationType()
+
+  useLayoutEffect(() => {
+    console.log("naviagation type: ", navigationType)
+    if (navigationType !== "POP" && !hash) {
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" })
+    }
+  }, [pathname, hash, navigationType])
+
   return (
     <div className="flex min-h-svh flex-col">
       <a
@@ -24,7 +40,7 @@ function AppLayout() {
       <main
         id="main-content"
         tabIndex={-1}
-        className="mx-auto w-full max-w-7xl flex-1 scroll-mt-44 px-4 py-12 outline-none sm:scroll-mt-20 sm:px-6 sm:py-20"
+        className="mx-auto w-full max-w-7xl flex-1 scroll-mt-44 px-4 py-12 outline-none sm:scroll-mt-20 sm:px-6 sm:py-10"
       >
         <Outlet />
       </main>
@@ -45,7 +61,6 @@ export function App() {
           path={gradingGuiProject.detailsPath}
           element={<GradingGuiPage />}
         />
-        <Route path="ui-playground" element={<UIPlayGroundPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

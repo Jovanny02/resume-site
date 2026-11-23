@@ -34,7 +34,7 @@ export const projects: readonly Project[] = [
     title: "Resume Website",
     year: 2026,
     description:
-      "My personal portfolio for sharing my experience and side projects. I built it to practice React and TypeScript, with a UI Playground for trying out components.",
+      "My personal portfolio for sharing my experience, side projects, interests, and to practice React and TypeScript.",
     image: {
       src: resumeSiteImage,
       alt: "Screenshot of this portfolio’s homepage",

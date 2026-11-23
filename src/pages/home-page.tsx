@@ -8,7 +8,7 @@ import {
 
 export function HomePage() {
   return (
-    <section aria-labelledby="home-title" className="text-center">
+    <section aria-labelledby="home-title" className="text-center pt-10">
       <h1
         id="home-title"
         className="text-[clamp(2.25rem,6.5vw,6rem)] leading-[1.12] tracking-tight"

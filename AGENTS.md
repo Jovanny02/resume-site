@@ -68,7 +68,6 @@ Use PascalCase component symbols, camelCase functions and variables, and kebab-c
 - Prefer accessible queries (e.g., `getByRole`, `getByLabelText`) over test IDs or CSS selectors.
 - Run relevant tests after changes and ensure existing tests continue to pass.
 - Mock external dependencies when necessary, but avoid excessive mocking.
-- Do not add tests to the ui-playground. This is for rapid manual testing and experimenting with individual components only.
 
 ## Commit & Pull Request Guidelines
 

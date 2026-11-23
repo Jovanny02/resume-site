@@ -9,6 +9,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 const title = /Hi, I'm Jovanny!\s+Backend Software Engineer\./
 
 beforeEach(() => {
+  vi.stubGlobal("scrollTo", vi.fn())
   vi.stubGlobal("matchMedia", (query: string) => ({
     media: query,
     matches: false,
@@ -162,9 +163,10 @@ describe("portfolio navigation", () => {
     expect(trigger).toHaveAttribute("aria-expanded", "false")
   })
 
-  it("opens the Grading GUI project from the card with the keyboard", async () => {
+  it("opens the Grading GUI project and returns without resetting the list scroll", async () => {
     const user = userEvent.setup()
     renderApp("/projects")
+    expect(window.scrollTo).not.toHaveBeenCalled()
 
     const timeline = within(
       screen.getByRole("list", { name: "Project timeline" })
@@ -172,6 +174,11 @@ describe("portfolio navigation", () => {
     timeline.getByRole("link", { name: "Digital Design Grading GUI" }).focus()
     await user.keyboard("{Enter}")
 
+    expect(window.scrollTo).toHaveBeenCalledWith({
+      top: 0,
+      left: 0,
+      behavior: "instant",
+    })
     expect(
       screen.getByRole("heading", {
         level: 1,
@@ -195,6 +202,18 @@ describe("portfolio navigation", () => {
     )
 
     await user.click(screen.getByRole("link", { name: "Back to all projects" }))
+    expect(
+      screen.getByRole("heading", { level: 1, name: "Projects" })
+    ).toBeVisible()
+    expect(window.scrollTo).toHaveBeenCalledTimes(1)
+  })
+
+  it("links to the Projects list after opening the detail page directly", async () => {
+    const user = userEvent.setup()
+    renderApp("/projects/grading-gui")
+
+    await user.click(screen.getByRole("link", { name: "Back to all projects" }))
+
     expect(
       screen.getByRole("heading", { level: 1, name: "Projects" })
     ).toBeVisible()

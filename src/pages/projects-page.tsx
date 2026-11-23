@@ -3,10 +3,10 @@ import { projects } from "@/data/projects"
 
 export function ProjectsPage() {
   return (
-    <section aria-labelledby="projects-title" className="max-w-5xl">
+    <section aria-labelledby="projects-title" className="max-w-7xl">
       <h1
         id="projects-title"
-        className="mb-8 w-fit font-heading text-4xl font-bold tracking-tight after:mt-3 after:block after:h-1 after:rounded-full after:bg-accent sm:mb-10 sm:text-6xl"
+        className="mb-8 w-fit font-heading text-4xl font-bold tracking-tight after:mt-3 after:block after:h-1 after:rounded-full after:bg-accent sm:mb-10 sm:text-5xl md:text-6xl"
       >
         Projects
       </h1>

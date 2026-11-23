@@ -1,6 +1,5 @@
 import {
   AppWindow,
-  Brush,
   FileText,
   FolderOpen,
   House,
@@ -21,6 +20,5 @@ export const projectLinks = [
     label: gradingGuiProject.title,
     to: gradingGuiProject.detailsPath,
     icon: AppWindow,
-  },
-  { label: "UI Playground", to: "/ui-playground", icon: Brush },
+  }
 ]

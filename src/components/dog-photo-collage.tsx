@@ -13,7 +13,7 @@ export function DogPhotoCollage({ photos }: DogPhotoCollageProps) {
   return (
     <div className="mt-6 grid gap-4 sm:grid-cols-2 md:auto-rows-[clamp(12rem,24vw,20rem)] md:grid-cols-3">
       {photos.map(
-        ({ src, title, alt, width, height, thumbnailPosition }, index) => {
+        ({ src, alt, width, height, thumbnailPosition }, index) => {
           const featured = index === 0 && photos.length > 1
           const tallPortrait = !featured && height > width * 2
 
@@ -28,7 +28,7 @@ export function DogPhotoCollage({ photos }: DogPhotoCollageProps) {
             >
               <Dialog>
                 <DialogTrigger
-                  aria-label={`View photo: ${title}`}
+                  aria-label={`View photo: ${src}`}
                   className={cn(
                     "relative block aspect-4/3 w-full cursor-zoom-in focus-visible:outline-none focus-visible:after:pointer-events-none focus-visible:after:absolute focus-visible:after:inset-1.5 focus-visible:after:rounded-xl focus-visible:after:ring-2 focus-visible:after:ring-ring focus-visible:after:ring-offset-2 focus-visible:after:ring-offset-background md:aspect-auto md:h-full",
                     tallPortrait && "max-sm:aspect-square"
@@ -49,7 +49,7 @@ export function DogPhotoCollage({ photos }: DogPhotoCollageProps) {
                   </span>
                 </DialogTrigger>
                 <DialogContent
-                  aria-label={title}
+                  aria-label={src}
                   className="p-4 motion-reduce:animate-none sm:max-w-3xl"
                 >
                   <img

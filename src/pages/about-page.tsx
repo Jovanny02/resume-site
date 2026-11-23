@@ -13,7 +13,7 @@ export function AboutPage() {
         <div>
           <h1
             id="about-title"
-            className="w-fit font-heading text-4xl font-bold tracking-tight after:mt-3 after:block after:h-1 after:rounded-full after:bg-accent sm:text-6xl lg:text-7xl"
+            className="w-fit font-heading text-4xl font-bold tracking-tight after:mt-3 after:block after:h-1 after:rounded-full after:bg-accent sm:text-5xl md:text-6xl"
           >
             About
           </h1>

@@ -80,6 +80,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
                 {project.detailsPath ? (
                   <Link
                     to={project.detailsPath}
+                    state={{ fromProjectsList: true }}
                     className="group-hover/card:text-accent after:absolute after:inset-0 focus-visible:text-accent focus-visible:outline-none motion-safe:transition-colors"
                   >
                     {project.title}

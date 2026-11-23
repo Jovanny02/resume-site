@@ -7,11 +7,11 @@ import { experience } from "@/data/experience"
 
 export function ResumePage() {
   return (
-    <section aria-labelledby="experience-title">
+    <section aria-labelledby="experience-title" className="max-w-7xl">
       <div className="mb-8 flex flex-wrap items-center gap-4 sm:mb-10">
         <h1
           id="experience-title"
-          className="w-fit font-heading text-4xl font-bold tracking-tight after:mt-3 after:block after:h-1 after:rounded-full after:bg-accent sm:text-6xl lg:text-7xl"
+          className="w-fit font-heading text-4xl font-bold tracking-tight after:mt-3 after:block after:h-1 after:rounded-full after:bg-accent sm:text-5xl md:text-6xl"
         >
           Work Experience
         </h1>
@@ -31,7 +31,7 @@ export function ResumePage() {
 
       <h1
         id="education-title"
-        className="mb-8 w-fit pt-16 font-heading text-4xl font-bold tracking-tight after:mt-3 after:block after:h-1 after:rounded-full after:bg-accent sm:mb-10 sm:text-6xl lg:text-7xl"
+        className="mb-8 w-fit pt-16 font-heading text-4xl font-bold tracking-tight after:mt-3 after:block after:h-1 after:rounded-full after:bg-accent sm:mb-10 sm:text-5xl md:text-6xl"
       >
         Education
       </h1>
