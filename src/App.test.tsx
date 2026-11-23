@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react"
+import { render, screen, waitFor, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { MemoryRouter } from "react-router"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
@@ -89,6 +89,34 @@ describe("portfolio navigation", () => {
       "Artemis by Andy Weir",
       "The Boy and the Dog by Seishu Hase",
     ])
+  })
+
+  it("opens a dog photo with the keyboard and restores focus on Escape", async () => {
+    const user = userEvent.setup()
+    renderApp("/about")
+
+    const dogs = within(screen.getByRole("region", { name: "Dogs" }))
+    expect(dogs.getAllByRole("button", { name: /View photo:/ })).toHaveLength(7)
+    const tile = dogs.getByRole("button", {
+      name: "View photo: Nap on the green couch",
+    })
+    tile.focus()
+    await user.keyboard("{Enter}")
+
+    const dialog = await screen.findByRole("dialog", {
+      name: "Nap on the green couch",
+    })
+    expect(within(dialog).queryByText("Nap on the green couch")).toBeNull()
+    expect(
+      within(dialog).getByRole("img", {
+        name: "A black dog and a tan dog asleep at opposite ends of a green couch",
+      })
+    ).toBeVisible()
+    expect(within(dialog).getByRole("button", { name: "Close" })).toBeVisible()
+
+    await user.keyboard("{Escape}")
+    await waitFor(() => expect(dialog).not.toBeInTheDocument())
+    await waitFor(() => expect(tile).toHaveFocus())
   })
 
   it("offers a PDF download on the resume page", () => {

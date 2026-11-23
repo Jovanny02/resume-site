@@ -1,3 +1,4 @@
+import { DogPhotoCollage } from "@/components/dog-photo-collage"
 import { SportsTeamsTimeline } from "@/components/sports-teams-timeline"
 import { aboutPageText } from "@/data/about-page-text"
 import { contact } from "@/data/contact"
@@ -55,16 +56,14 @@ export function AboutPage() {
         </ul>
       </section>
 
-      <section
-        aria-labelledby="about-dogs-title"
-        className="border-t pt-6"
-      >
+      <section aria-labelledby="about-dogs-title" className="border-t pt-6">
         <h2
-          id="dogs-title"
-          className="font-heading text-2xl font-semibold tracking-tight sm:text-3xl tracking-tight after:mt-3 after:block after:h-1 after:rounded-full after:bg-accent w-fit"
+          id="about-dogs-title"
+          className="w-fit font-heading text-2xl font-semibold tracking-tight after:mt-3 after:block after:h-1 after:rounded-full after:bg-accent sm:text-3xl"
         >
           Dogs
         </h2>
+        <DogPhotoCollage photos={aboutPageText.dogPhotos} />
       </section>
     </div>
   )
